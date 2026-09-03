@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pip-cache/
+.coverage
+htmlcov/
+.workbuddy/
+.trae/
+docs/
+
+# 环境与配置
+.env
+*.db
+*.sqlite3
+
+# 编辑器
+.idea/
+.vscode/
+*.swp
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 日志
+logs/
+*.log

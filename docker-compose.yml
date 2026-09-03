@@ -1,0 +1,109 @@
+# FinRAG 全栈编排：api + worker + qdrant + redis + mysql
+# 用法: docker compose up -d --build
+# 首次启动后初始化:
+#   docker compose exec api python -m finrag.scripts.init_db
+#   docker compose exec api python -m finrag.scripts.import_dictionary
+# 模型 API key 从 .env 文件读取（FINRAG_LLM_CLOUD_API_KEY / FINRAG_EMBEDDING_API_KEY / FINRAG_RERANK_API_KEY）
+name: finrag
+
+services:
+  api:
+    build:
+      context: .
+      args:
+        INSTALL_AI_EXTRAS: "0"
+    image: finrag:dev
+    command: uvicorn finrag.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment: &finrag_env
+      FINRAG_DB_URL: mysql+pymysql://finrag:finrag@mysql:3306/finrag?charset=utf8mb4
+      FINRAG_BUSINESS_DB_URL: mysql+pymysql://finrag:finrag@mysql:3306/business?charset=utf8mb4
+      FINRAG_REDIS_URL: redis://redis:6379/0
+      FINRAG_QDRANT_HOST: qdrant
+      FINRAG_QDRANT_PORT: "6333"
+      FINRAG_CELERY_BROKER_URL: redis://redis:6379/0
+      FINRAG_CELERY_RESULT_BACKEND: redis://redis:6379/1
+    dns:
+      - 8.8.8.8
+      - 223.5.5.5
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests      # 新增：测试目录实时挂载
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./data/uploads:/app/data/uploads   # 上传文件共享卷：worker 需读到 api 落盘的文件
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+
+  worker:
+    image: finrag:dev
+    command: celery -A finrag.tasks.celery_app worker -l info --concurrency=2
+    env_file: .env
+    environment: *finrag_env
+    dns:
+      - 8.8.8.8
+      - 223.5.5.5
+    volumes:
+      - ./src:/app/src
+      - ./data/uploads:/app/data/uploads   # 与 api 共享上传目录（异步摄入在 worker 读文件）
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/6333 && echo ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: finrag
+      MYSQL_USER: finrag
+      MYSQL_PASSWORD: finrag
+      TZ: Asia/Shanghai
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./scripts/sql:/docker-entrypoint-initdb.d
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  qdrant_data:
+  redis_data:
+  mysql_data:

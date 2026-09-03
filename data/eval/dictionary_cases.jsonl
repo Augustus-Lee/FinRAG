@@ -1,0 +1,15 @@
+{"scene": "dictionary", "question": "客户的手机号存在哪个字段", "expected": ["customer_account.mobile"]}
+{"scene": "dictionary", "question": "身份证号码用什么字段存", "expected": ["customer_account.id_card"]}
+{"scene": "dictionary", "question": "客户的电子邮箱地址在哪个字段", "expected": ["customer_account.email"]}
+{"scene": "dictionary", "question": "客户的风险承受能力等级怎么表示", "expected": ["customer_account.risk_level"]}
+{"scene": "dictionary", "question": "总资产的统计口径是什么，用哪个字段", "expected": ["customer_account.total_asset"]}
+{"scene": "dictionary", "question": "可用资金余额对应哪个字段", "expected": ["customer_account.available_asset"]}
+{"scene": "dictionary", "question": "冻结金额在哪个字段", "expected": ["customer_account.frozen_asset"]}
+{"scene": "dictionary", "question": "净资产是怎么计算的，存哪个字段", "expected": ["customer_account.net_asset"]}
+{"scene": "dictionary", "question": "销售金额的口径定义是什么", "expected": ["product_sales.sales_amount"]}
+{"scene": "dictionary", "question": "毛利金额是哪个字段", "expected": ["product_sales.gross_profit"]}
+{"scene": "dictionary", "question": "线上还是线下销售用什么字段区分", "expected": ["product_sales.channel"]}
+{"scene": "dictionary", "question": "增值税率存在哪个字段", "expected": ["product_sales.tax_rate"]}
+{"scene": "dictionary", "question": "成交金额和手续费分别是什么字段", "expected": ["transaction_record.trade_amount", "transaction_record.commission"]}
+{"scene": "dictionary", "question": "印花税和过户费在哪个字段", "expected": ["transaction_record.stamp_duty", "transaction_record.transfer_fee"]}
+{"scene": "dictionary", "question": "融资融券的信用交易标记是哪个字段", "expected": ["transaction_record.margin_flag"]}

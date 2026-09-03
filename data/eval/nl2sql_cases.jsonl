@@ -1,0 +1,15 @@
+{"scene": "nl2sql", "question": "高风险产品的销售金额是多少", "golden_sql": "SELECT SUM(sales_amount) FROM product_sales WHERE risk_level = '高' LIMIT 1;"}
+{"scene": "nl2sql", "question": "总资产超过100万的客户有几个", "golden_sql": "SELECT COUNT(*) FROM customer_account WHERE total_assets > 1000000 LIMIT 1;"}
+{"scene": "nl2sql", "question": "客户张三的手机号是什么", "golden_sql": "SELECT mobile FROM customer_account WHERE customer_name = '张三' LIMIT 1;"}
+{"scene": "nl2sql", "question": "所有产品的总销售金额是多少", "golden_sql": "SELECT SUM(sales_amount) FROM product_sales LIMIT 1;"}
+{"scene": "nl2sql", "question": "买入交易的手续费总额是多少", "golden_sql": "SELECT SUM(commission) FROM transaction_record WHERE trade_type = '买入' LIMIT 1;"}
+{"scene": "nl2sql", "question": "2026年6月的销售金额合计是多少", "golden_sql": "SELECT SUM(sales_amount) FROM product_sales WHERE trade_date >= '2026-06-01' AND trade_date < '2026-07-01' LIMIT 1;"}
+{"scene": "nl2sql", "question": "按风险等级统计销售额", "golden_sql": "SELECT risk_level, SUM(sales_amount) FROM product_sales GROUP BY risk_level LIMIT 10;"}
+{"scene": "nl2sql", "question": "客户的平均总资产是多少", "golden_sql": "SELECT AVG(total_assets) FROM customer_account LIMIT 1;"}
+{"scene": "nl2sql", "question": "销售额最高的产品是哪个", "golden_sql": "SELECT product_name, SUM(sales_amount) FROM product_sales GROUP BY product_name ORDER BY 2 DESC LIMIT 1;"}
+{"scene": "nl2sql", "question": "客户王五的总资产是多少", "golden_sql": "SELECT total_assets FROM customer_account WHERE customer_name = '王五' LIMIT 1;"}
+{"scene": "nl2sql", "question": "卖出交易一共有几笔", "golden_sql": "SELECT COUNT(*) FROM transaction_record WHERE trade_type = '卖出' LIMIT 1;"}
+{"scene": "nl2sql", "question": "黄金ETF的成交金额合计是多少", "golden_sql": "SELECT SUM(trade_amount) FROM transaction_record WHERE product_name = '黄金ETF' LIMIT 1;"}
+{"scene": "nl2sql", "question": "2026年7月发生了几笔交易", "golden_sql": "SELECT COUNT(*) FROM transaction_record WHERE trade_date >= '2026-07-01' AND trade_date < '2026-08-01' LIMIT 1;"}
+{"scene": "nl2sql", "question": "客户号C20260001的交易总金额是多少", "golden_sql": "SELECT SUM(trade_amount) FROM transaction_record WHERE customer_no = 'C20260001' LIMIT 1;"}
+{"scene": "nl2sql", "question": "手续费超过1000元的销售记录有哪些", "golden_sql": "SELECT trade_date, product_name, sales_amount, commission FROM product_sales WHERE commission > 1000 LIMIT 10;"}

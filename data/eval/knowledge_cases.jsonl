@@ -1,0 +1,15 @@
+{"scene": "knowledge", "question": "FinRAG 面向哪三大金融场景？", "golden_answer": "三大金融场景：数据字典、智能问数（NL2SQL）、企业内部知识库。分别对应三种 RAG 形态：数据字典是元数据即知识（字典检索 + LLM 口径解释）；智能问数是结构化数据问答（NL2SQL + 校验 + 只读执行 + 结果翻译）；知识库问答是非结构化文档（混合检索 RAG + 引用溯源）。"}
+{"scene": "knowledge", "question": "SQL 安全校验有哪几层？", "golden_answer": "SQL 四层安全校验：sqlglot AST 解析 → 仅允许单条 SELECT → 表名白名单（含 JOIN/子查询）→ 强制 LIMIT 上限 → 敏感列标记（脱敏）。"}
+{"scene": "knowledge", "question": "智能问数 NL2SQL 的完整处理流程是什么？", "golden_answer": "NL2SQL 流程：Schema Linking → LLM 生成 → 四层校验 → 重试图 → 只读执行，最后对查询结果做结果翻译转述。"}
+{"scene": "knowledge", "question": "项目为什么同时使用 LangChain 和 LangGraph？", "golden_answer": "按状态复杂度分工：固定线性管线（解析→切分→检索→生成）用 LangChain 组件更轻；需要循环/分支状态的场景（场景路由、NL2SQL 失败重试）用 LangGraph StateGraph 表达。把图用在刀刃上，避免为了用而用。"}
+{"scene": "knowledge", "question": "MCP 执行层的设计原则是什么？", "golden_answer": "智能问数的查询执行抽象为 McpExecutor：直连业务库（演示）或 Stdio MCP Server（对接已有 DB 查询工具）。设计原则是安全校验前置（AST+白名单+SELECT-only+LIMIT 在自研层完成），MCP 仅作为只读执行器，不承载任何信任决策。"}
+{"scene": "knowledge", "question": "混合检索的 RRF 融合是怎么做的？", "golden_answer": "自研混合检索 RRF 融合：向量召回 + BM25 关键词召回，用 Reciprocal Rank Fusion（k=60）按排序位置融合，不依赖异构分数尺度。"}
+{"scene": "knowledge", "question": "金融规则切分器有哪些特点？", "golden_answer": "金融规则切分器特点：按标题层级记录 section_path（引用溯源）、表格整体保留为一块（table_meta 记录表头/行数，数字口径不被切断）、CJK token 估算。"}
+{"scene": "knowledge", "question": "双模 LLM 网关支持哪几种模式？", "golden_answer": "双模 LLM 网关支持 cloud / local / auto 三模式：云端 API（DeepSeek 等 OpenAI 兼容）与本地 Ollama 自动切换，便于演示与降级。"}
+{"scene": "knowledge", "question": "VectorStore 抽象层的设计有什么好处？", "golden_answer": "VectorStore 抽象层让向量库不锁死品牌：VectorStore ABC + Qdrant 实现，规模增长时可平滑切换 Milvus / ES。"}
+{"scene": "knowledge", "question": "RAG 主链路的处理流程是什么？", "golden_answer": "RAG 主链路：解析 → 金融切分 → 混合检索（RRF）→ Rerank → 生成 + 引用溯源。"}
+{"scene": "knowledge", "question": "Schema Linking 的作用是什么？", "golden_answer": "自研 Schema Linking 基于数据字典（字段中文注释 + 同义词）做关键词重叠打分，缩小 NL2SQL 的候选表/字段范围。"}
+{"scene": "knowledge", "question": "FinRAG 的基础设施层用了哪些组件？", "golden_answer": "基础设施层组件：Qdrant（向量）、BM25（内存索引）、MySQL（元数据/字典）、Redis + Celery（异步任务）、LLM 网关（cloud/local/auto）、MCP 执行器、对象存储（规划中）。"}
+{"scene": "knowledge", "question": "统一会话入口是如何路由到三大场景的？", "golden_answer": "ChatService 作为统一会话入口，通过 SceneRouter（LangGraph 场景路由）把请求路由到 knowledge / nl2sql / dictionary 三大场景。"}
+{"scene": "knowledge", "question": "项目的核心组件为什么坚持自研而不用 LangChain 的 RetrievalQA？", "golden_answer": "核心组件均自研（src/finrag/core/），不依赖 LangChain 的 RetrievalQA 黑盒——能讲清楚每一层在做什么、为什么这么做，可解释、可调参。"}
+{"scene": "knowledge", "question": "智能问数执行 SQL 时为什么能保证安全？", "golden_answer": "因为安全校验前置：sqlglot AST 解析、仅允许单条 SELECT、表名白名单（含 JOIN/子查询）、强制 LIMIT 上限、敏感列标记（脱敏）都在自研层完成，MCP/执行器仅作只读执行，不承载信任决策。"}
